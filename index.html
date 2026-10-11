@@ -1,0 +1,28 @@
+<!DOCTYPE html><html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Gattoku</title><link rel="stylesheet" href="style.css"></head><body>
+<canvas id="fx"></canvas>
+<div id="load" class="ov"><img id="lc" class="bounce" width="120"><h1>Gattoku</h1><p id="phrase"></p><div class="bar"><i id="fill"></i></div></div>
+<main>
+<div class="brand"><div id="pb"></div><img id="bc" width="38"><h1>Gattoku</h1></div>
+<div class="top"><div>Livello<b id="lv"></b></div><div>Streak<b id="st"></b></div><div>Aiuti<b id="hn"></b></div><div>Oggi<b id="cs"></b></div></div>
+<div class="rules"><span>🐱 1 gatto per colore</span><span>↔↕ 1 gatto per riga e colonna</span><span>🚫 i gatti non possono toccarsi</span></div>
+<div class="row"><div id="hearts"></div><div id="prog"></div></div>
+<div id="board"></div><div id="toast"></div>
+<div class="btns"><button id="bh">💡 Aiuto</button><button id="bu">↶</button><button id="br">↺</button><button id="bt">❓</button><button id="bo">⚙</button><button id="bl">🏆</button><button id="bk">⚔️</button><button id="bi">ℹ️</button></div>
+</main>
+<div id="tut" class="ov hidden"><div class="card"><h2 id="tt"></h2><div id="td"></div><p id="tx"></p><div class="dots" id="dots"></div><button id="tn">Avanti</button></div></div>
+<div id="win" class="ov hidden"><div class="card"><h2>Livello completato! 🎉</h2><div id="wd"></div><h1 id="wh"></h1><p id="we"></p><div id="stars"></div><p id="wt"></p><button id="nx">Prossimo livello ➜</button></div></div>
+<div id="lose" class="ov hidden"><div class="card"><h2>Vite finite 💔</h2><p>Nessun problema: riparti da questo livello, ora conosci già qualche trappola!</p><button id="rt">Riprova livello</button></div></div>
+<div id="opt" class="ov hidden"><div class="card"><h2>Opzioni</h2>
+<label>Musica <input type="range" id="vol" min="0" max="1" step=".05"></label>
+<label><input type="checkbox" id="sfx"> Effetti sonori</label>
+<button id="ex">⬇ Esporta salvataggio</button><button id="im">⬆ Importa salvataggio</button>
+<input type="file" id="fi" accept=".json,application/json" hidden><p id="msg"></p><button class="cl">Chiudi</button></div></div>
+<div id="lb" class="ov hidden"><div class="card"><h2>🏆 Classifica</h2><ol id="ol"></ol><button class="cl">Chiudi</button></div></div>
+<div id="comp" class="ov hidden"><div class="card"><h2>⚔️ Competizione</h2><div id="cb"></div><button class="cl">Chiudi</button></div></div>
+<div id="prof" class="ov hidden"><div class="card"><h2>Il tuo profilo</h2><div id="pv" class="cen"></div><input id="pn" maxlength="14" placeholder="Il tuo nome"><p id="pw"></p><b>Immagine profilo</b><div id="pg" class="grid"></div><b>Cornici</b><div class="tabs"><button id="ftm">Mie</button><button id="fta">Tutte</button></div><div id="fg" class="grid"></div><div class="tabs"><button id="fpv">◀</button><span id="fpg"></span><button id="fnx">▶</button></div><button id="ps">Salva</button><button class="cl">Chiudi</button></div></div>
+<div id="bp" class="ov hidden"><div class="card"><div id="bpv" class="cen"></div><h2 id="bpn"></h2><p id="bpw"></p><button class="cl">Chiudi</button></div></div>
+<div id="info" class="ov hidden"><div class="card"><h2>ℹ️ Crediti e info</h2><div id="ib"></div><button class="cl">Chiudi</button></div></div>
+<div id="pad"></div>
+<script src="config.js"></script><script src="bots.js"></script><script src="game.js"></script></body></html>
