@@ -20,11 +20,19 @@ const fmt=s=>{s=String(s);return s.length<=12?BigInt(s).toLocaleString('it-IT'):
 function hash(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return(h^h>>>16)>>>0}
 const rng=s=>{let a=hash(s);return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}};
 const sizeOf=l=>{l=(l-1n)%100n+1n;return l<6n?5:l<16n?6:l<31n?7:l<51n?8:l<76n?9:10};
-function place(n,R){const s=[],u=[];const go=r=>{if(r==n)return true;const cs=[...Array(n).keys()].sort(()=>R()-.5);for(const c of cs){if(u[c]||(r&&Math.abs(c-s[r-1])<2))continue;s[r]=c;u[c]=1;if(go(r+1))return true;u[c]=0}return false};return go(0)?s:null}
+const shuf=(a,R)=>{for(let i=a.length-1;i>0;i--){const j=R()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+function solveFrom(n,g,fx){const u=[],ru=[],s=[];const go=r=>{if(r==n)return true;for(let c=0;c<n;c++){if(fx[r]>=0&&fx[r]!=c)continue;const q=g[r*n+c];if(u[c]||ru[q]||(r&&Math.abs(c-s[r-1])<2))continue;u[c]=ru[q]=1;s[r]=c;if(go(r+1))return true;u[c]=ru[q]=0}return false};return go(0)?s:null}
+function place(n,R){const s=[],u=[];const go=r=>{if(r==n)return true;const cs=shuf([...Array(n).keys()],R);for(const c of cs){if(u[c]||(r&&Math.abs(c-s[r-1])<2))continue;s[r]=c;u[c]=1;if(go(r+1))return true;u[c]=0}return false};return go(0)?s:null}
 function grow(n,s,R){const g=Array(n*n).fill(-1);s.forEach((c,r)=>g[r*n+c]=r);let left=n*n-n;const D=[[1,0],[-1,0],[0,1],[0,-1]];
  while(left){const o=[];for(let i=0;i<n*n;i++)if(g[i]<0){const r=i/n|0,c=i%n;for(const[a,b]of D){const y=r+a,x=c+b;if(y>=0&&y<n&&x>=0&&x<n&&g[y*n+x]>=0)o.push([i,g[y*n+x]])}}const[i,k]=o[R()*o.length|0];g[i]=k;left--}return g}
 function count(n,g){let k=0;const u=[],ru=[],s=[];const go=r=>{if(k>1)return;if(r==n){k++;return}for(let c=0;c<n;c++){const q=g[r*n+c];if(u[c]||ru[q]||(r&&Math.abs(c-s[r-1])<2))continue;u[c]=ru[q]=1;s[r]=c;go(r+1);u[c]=ru[q]=0}};go(0);return k}
-function gen(lv){const n=sizeOf(BigInt(lv));for(let t=0;;t++){const R=rng(lv+':'+t),sol=place(n,R);if(!sol)continue;const reg=grow(n,sol,R),u=count(n,reg)===1;if(u||t>300)return{n,reg,sol,u}}}
+function alt(n,g,sol){const u=[],ru=[],s=[];let res=null;const go=r=>{if(res)return;if(r==n){if(s.some((c,i)=>c!=sol[i]))res=s.slice();return}for(let c=0;c<n;c++){const q=g[r*n+c];if(u[c]||ru[q]||(r&&Math.abs(c-s[r-1])<2))continue;u[c]=ru[q]=1;s[r]=c;go(r+1);u[c]=ru[q]=0}};go(0);return res}
+function conn(n,g,q){const m=[];g.forEach((v,i)=>v==q&&m.push(i));if(!m.length)return false;const seen=new Set([m[0]]),st=[m[0]];while(st.length){const i=st.pop(),r=i/n|0,c=i%n;for(const[y,x]of[[1,0],[-1,0],[0,1],[0,-1]]){const yy=r+y,xx=c+x,j=yy*n+xx;if(yy>=0&&yy<n&&xx>=0&&xx<n&&g[j]==q&&!seen.has(j)){seen.add(j);st.push(j)}}}return seen.size==m.length}
+function fix(n,g,sol,R){for(let it=0;it<500;it++){const a=alt(n,g,sol);if(!a)return true;const cand=[];a.forEach((c,r)=>{if(c!=sol[r])cand.push(r*n+c)});shuf(cand,R);let done=false;
+ for(const i of cand){const r=i/n|0,c=i%n,nb=[];for(const[y,x]of[[1,0],[-1,0],[0,1],[0,-1]]){const yy=r+y,xx=c+x;if(yy>=0&&yy<n&&xx>=0&&xx<n&&g[yy*n+xx]!=g[i])nb.push(g[yy*n+xx])}
+  shuf(nb,R);for(const q of nb){const old=g[i];g[i]=q;if(conn(n,g,old)){done=true;break}g[i]=old}if(done)break}
+ if(!done)return false}return false}
+function gen(lv){const n=sizeOf(BigInt(lv));for(let t=0;;t++){const R=rng(lv+':'+t),sol=place(n,R);if(!sol)continue;const reg=grow(n,sol,R),u=fix(n,reg,sol,R);if(u||t>40)return{n,reg,sol,u}}}
 // ---- audio (file mp3 se presenti, altrimenti sintetizzato) ----
 let AC,MG,okf={},music=new Audio(),mOn=false,synth=false,step=0;
 const AEX=['mp3','ogg','wav','m4a','opus'];
@@ -73,15 +81,16 @@ function tap(i,x){if(won||busy)return;mark();played();const v=M[i];
  if(v==2)return;if(v==3){sfx('click');toast('Questa casella è già esclusa ✕');return}
  if(x||v==0){H.push([i,v]);M[i]=v==1&&x?0:1;nw=i;sfx('click');render();return}
  // v==1 -> prova a mettere un gatto
- if(!P.u||P.sol[i/P.n|0]==i%P.n){good(i);return}
+ if(okPlace(i)){good(i);return}
  wrong(i)}
+function okPlace(i){const n=P.n,r=i/n|0,fx=Array(n).fill(-1);M.forEach((v,j)=>v==2&&(fx[j/n|0]=j%n));if(fx[r]>=0)return false;fx[r]=i%n;return!!solveFrom(n,P.reg,fx)}
 function wrong(i){const msg=reason(i);M[i]=1;nw=i;errs++;lives--;sfx('bad');navigator.vibrate&&navigator.vibrate(120);render();const el=document.querySelector(`[data-i="${i}"]`);el&&el.classList.add('bad');toast('❌ '+msg);
  const h=$('#hearts').children;h[lives]&&h[lives].classList.add('pop');hud();$('#hearts').children[lives]&&$('#hearts').children[lives].classList.add('pop');
  if(lives<=0){busy=true;setTimeout(()=>{sfx('lose');$('#lose').classList.remove('hidden')},900)}}
 function win(){won=true;const st=Math.max(1,lives);S.level=(BigInt(S.level)+1n).toString();if(BigInt(S.level)>BigInt(S.best))S.best=S.level;S.done++;roll();if(sIdx(dayN())>=0)S.comp.stars+=st;let extra='';if(S.done%C.hintEvery==0){S.hints++;extra=' · +1 aiuto 💡'}save();
  setTimeout(()=>{sfx('win');confetti();$('#wd').innerHTML=img('cat.png','🐱','dance');$('#wh').textContent=errs==0?'PERFETTO!':errs<=2?'OTTIMO!':errs<=5?'BRAVO!':'CE L\'HAI FATTA!';$('#we').textContent='Errori: '+(errs>10?'10+':errs);$('#stars').innerHTML=[1,2,3].map(i=>`<span style="animation-delay:${i*.2}s">${i<=st?'⭐':'☆'}</span>`).join('');
   $('#wt').textContent=`Prossimo: livello ${fmt(S.level)} · Streak 🔥 ${S.streak}${extra}`;$('#win').classList.remove('hidden')},500)}
-function hint(){if(won||busy)return;if(hu>=2)return toast('Hai già usato 2 aiuti in questo livello! 💡');if(S.hints<1)return toast('Nessun aiuto: completa livelli per guadagnarne! 🎁');const n=P.n,r=P.sol.findIndex((c,r)=>M[r*n+c]!=2);if(r<0)return;S.hints--;hu++;played();save();sfx('hint');for(let c=0;c<n;c++)if(M[r*n+c]==2)M[r*n+c]=0;M[r*n+P.sol[r]]=0;good(r*n+P.sol[r],1);toast('💡 Ecco un gatto al posto giusto!')}
+function hint(){if(won||busy)return;if(hu>=2)return toast('Hai già usato 2 aiuti in questo livello! 💡');if(S.hints<1)return toast('Nessun aiuto: completa livelli per guadagnarne! 🎁');const n=P.n,fx=Array(n).fill(-1);M.forEach((v,j)=>v==2&&(fx[j/n|0]=j%n));const sl=solveFrom(n,P.reg,fx),r=fx.findIndex(c=>c<0);if(r<0||!sl)return;S.hints--;hu++;played();save();sfx('hint');good(r*n+sl[r],1);toast('💡 Ecco un gatto al posto giusto!')}
 function undo(){if(won||busy||!H.length)return;const[i,v]=H.pop();M[i]=v;nw=-1;sfx('click');render()}
 const reset=()=>{if(!won&&!busy){restart()}};
 function mv(dx,dy){const n=P.n;cur=Math.max(0,Math.min(n-1,(cur/n|0)+dy))*n+Math.max(0,Math.min(n-1,cur%n+dx));mark()}
@@ -94,7 +103,7 @@ addEventListener('keydown',e=>{if(document.querySelector('.ov:not(.hidden)'))ret
  else if(k==' '||k=='Enter'){e.preventDefault();tap(cur)}else if(k=='x'||k=='X')tap(cur,1);else if(k=='h'||k=='H')hint();else if(k=='z'||k=='Z')undo();else if(k=='Escape')toggle('#opt')});
 const pv={};let dt=0,padOn=false,zone='board',bi=0,oi=0,lastOv=null;
 const bts=()=>[...document.querySelectorAll('.btns button')];
-const ovEl=()=>document.querySelector('.ov:not(.hidden):not(#load)');
+const ovEl=()=>[...document.querySelectorAll('.ov:not(.hidden):not(#load)')].pop();
 const focs=o=>[...o.querySelectorAll('button,input:not([type=file])')];
 function gf(){document.querySelectorAll('.gpf').forEach(e=>e.classList.remove('gpf'));const o=ovEl(),L=$('#pad');L.style.display=padOn?'block':'none';
  L.textContent=o?'✚ Naviga · Ⓐ Conferma · Ⓑ Chiudi':'✚ Muovi · Ⓐ ✕/Gatto · Ⓑ ✕ · Ⓧ Aiuto · Ⓨ Ricomincia · RB Indietro · LB Tutorial · Select Classifica · Start Opzioni';
@@ -150,25 +159,26 @@ const dayN=()=>dn(today()),sIdx=d=>C.seasons.findIndex(s=>d>=dn(s.from)&&d<=dn(s
 const dayProg=()=>{const d=new Date(),s=new Date(d);s.setHours(0,0,0,0);return(d-s)/864e5};
 const BC={};let BL=[];
 function pick(day){const N=BOTS.length,K=Math.min(C.botCount,N),R=rng('c'+day),set=new Set();for(let j=N-K;j<N;j++){const t=R()*(j+1)|0;set.add(set.has(t)?j:t)}
- const q=[...'ppppp'+'oooooo'+'lllllllll'];while(q.length<K)q.push('m');q.length=K;q.sort(()=>R()-.5);
+ const q=[...'ppppp'+'oooooo'+'lllllllll'];while(q.length<K)q.push('m');q.length=K;shuf(q,R);
  return[...set].map((x,i)=>{const b=BOTS[x],r=rng('b'+day+':'+x),t=b[4]||q[i],tg=t=='p'?45+r()*25:t=='m'?12+r()*23:t=='l'?2+r()*10:0,s=r()*.6;return{n:b[0],f:b[1],p:b[2],w:b[3],tg,s,e:Math.min(1,s+.2+r()*(1-s))}})}
 const stand=(day,p)=>{const B=BC[day]||(BC[day]=pick(day));return[...B.map(b=>({...b,st:Math.floor(b.tg*Math.max(0,Math.min(1,(p-b.s)/(b.e-b.s))))})),{me:1,n:S.p.name,f:S.p.frame,p:S.p.pfp,st:S.comp.stars}].sort((a,b)=>b.st-a.st||(b.me?1:0)-(a.me?1:0))};
 function roll(){const d=dayN();if(S.comp.day===d)return;
- if(S.comp.day&&S.comp.stars>0){const rk=stand(S.comp.day,1).findIndex(x=>x.me)+1;S.pend={rank:rk,stars:S.comp.stars};if(rk==1){S.wins=(BigInt(S.wins)+1n).toString();S.chests.push({f:S.comp.fr||1})}}
+ if(S.comp.day&&S.comp.stars>0){const rk=stand(S.comp.day,1).findIndex(x=>x.me)+1;S.pend={rank:rk,stars:S.comp.stars};if(rk==1){S.wins=(BigInt(S.wins)+1n).toString();if(sIdx(S.comp.day)>=0)S.chests.push(S.comp.day)}}
  const se=C.seasons[sIdx(d)];S.comp={day:d,stars:0,fr:se?se.frame:0};save()}
 function compUI(){roll();const se=C.seasons[sIdx(dayN())];let h=se?`<p class="sub">${esc(se.name)} · cornice in palio</p><div class="cen">${av(S.p.name,S.p.pfp,se.frame,84)}</div><p id="tl"></p>`:'';
- if(S.chests.length)h+=`<div id="chest" class="cen"><button class="plain" id="co">${xi('assets/chest/closed','ch','','🎁')}</button><p id="cr">Hai vinto una competizione! Tocca la cassa</p></div>`;
+ if(S.chests.length)h+='<p class="msg">🎁 Hai una cassa da aprire!</p>';
  else if(S.pend){h+=`<p class="msg">Ultima competizione: sei arrivato ${S.pend.rank}º con ${S.pend.stars} ⭐. Riprova oggi!</p>`;S.pend=null;save()}
  if(!se)h+='<p class="msg">⏳ Una prossima competizione stagionale arriverà fra poco</p>';else h+='<ol id="cl"></ol>';
- $('#cb').innerHTML=h;compList();$('#comp').classList.remove('hidden')}
+ $('#cb').innerHTML=h;compList();$('#comp').classList.remove('hidden');if(S.chests.length)showChest()}
 function compList(){const e=$('#cl');if(!e)return;const L=stand(dayN(),dayProg()),l=Math.ceil((1-dayProg())*1440);BL=L;$('#tl').textContent=`Termina tra ${Math.floor(l/60)}h ${l%60}m · la tua posizione: ${L.findIndex(x=>x.me)+1}º`;
  e.innerHTML=L.map((x,i)=>`<li class="${x.me?'me':''}"><button class="plain row" data-i="${x.me?-1:i}"><span class="rk">${i+1}</span>${av(x.n,x.p,x.f,38,!x.me)}<span class="nm">${esc(x.n)}</span><b>${x.st} ⭐</b></button></li>`).join('')}
 setInterval(()=>{if(!$('#comp').classList.contains('hidden'))compList()},20000);
-$('#cb').onclick=e=>{const o=e.target.closest('#co'),r=e.target.closest('#rw'),b=e.target.closest('[data-i]');
- if(o&&!o.dataset.o){o.dataset.o=1;const c0=S.chests[0],fid=typeof c0=='object'?c0.f:1,has=S.frames.includes(fid);sfx('win');confetti();
-  o.innerHTML=xi('assets/chest/open','ch','','🎉');$('#cr').innerHTML=`${has?'':'Nuova cornice! '}+${C.chestHints} 💡 aiuti<div class="cen">${has?'':av(S.p.name,S.p.pfp,fid,84)}</div><button id="rw" data-f="${fid}">Riscatta</button>`}
- else if(r){const fid=+r.dataset.f;S.chests.shift();if(!S.frames.includes(fid))S.frames.push(fid);S.hints+=C.chestHints;save();hud();compUI()}
- else if(b&&+b.dataset.i>=0){const x=BL[+b.dataset.i];$('#bpv').innerHTML=av(x.n,x.p,x.f,110,1);$('#bpn').textContent=x.n;$('#bpw').textContent='🏆 Vittorie in competizione: '+fmtW(x.w||0);$('#bp').classList.remove('hidden')}};
+function showChest(){$('#co').innerHTML=xi('assets/chest/closed','ch','','🎁');$('#co').dataset.o='';$('#cr').innerHTML='<p>Hai vinto! Tocca la cassa 🎁</p>';$('#chestov').classList.remove('hidden')}
+$('#chestov').onclick=e=>{const o=e.target.closest('#co'),r=e.target.closest('#rw');
+ if(o&&!o.dataset.o){o.dataset.o=1;const c0=S.chests[0],se0=typeof c0=='object'?{frame:c0.f}:C.seasons[sIdx(c0)],fid=se0?se0.frame:0,has=!fid||S.frames.includes(fid);sfx('win');confetti();
+  o.innerHTML=xi('assets/chest/open','ch','','🎉');$('#cr').innerHTML=`<div class="card cen">${has?'':'<h3>Nuova cornice! 🖼</h3>'+av(S.p.name,S.p.pfp,fid,84)}<p>+${C.chestHints} 💡 aiuti</p><button id="rw" data-f="${fid}">Riscatta</button></div>`}
+ else if(r){const fid=+r.dataset.f;S.chests.shift();if(fid&&!S.frames.includes(fid))S.frames.push(fid);S.hints+=C.chestHints;save();hud();$('#chestov').classList.add('hidden');compUI()}};
+$('#cb').onclick=e=>{const b=e.target.closest('[data-i]');if(b&&+b.dataset.i>=0){const x=BL[+b.dataset.i];$('#bpv').innerHTML=av(x.n,x.p,x.f,110,1);$('#bpn').textContent=x.n;$('#bpw').textContent='🏆 Vittorie in competizione: '+fmtW(x.w||0);$('#bp').classList.remove('hidden')}};
 $('#bk').onclick=compUI;
 function renderPB(){$('#pb').innerHTML=av(S.p.name,S.p.pfp,S.p.frame,40)+'<span>'+esc(S.p.name)+'</span>'}
 let D,fp=0,ft='mine';const PG=12;
