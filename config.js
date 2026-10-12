@@ -17,7 +17,7 @@ window.CONFIG={
   //phrase:["cia"]   .  Sono le frasi durante il caricamente che verranno dette in quella determinata stagione.
   // ricorda di aggiungerne altre, o sennò succederanno dei bug quando arriveranno stagioni inesistenti.
   seasons:[
-    {name:"Halloween",from:"2026-10-01",to:"2026-10-31",theme:"halloween",frame:6,phrases:["Buon Halloween! ","Attenzione ai gatti neri... 🖤", "🎃Giocare 30 minuti prima di dormire ti aiuterà nel sonno 😴"]},
+    {name:"Halloween",from:"2026-10-01",to:"2026-10-31",theme:"halloween",frame:6,phrases:["🎃Buon Halloween!🎃","Attenzione ai gatti neri... 🖤", "🎃Giocare 30 minuti prima di dormire ti aiuterà nel sonno 😴"]},
     {name:"default",from:"2026-11-01",to:"2026-11-31",theme:"default",frame:3,phrases:["Giocare 30 minuti prima di dormire ti aiuterà nel sonno 😴", "Ogni gattino merita il suo spazio vitale 🐾", "Fai una partita al giorno per tenere viva la streak 🔥", "I gatti odiano avere vicini troppo vicini 😼"]},
     {name:"Natale",   from:"2026-12-01",to:"2026-12-31",theme:"natale",   frame:4,phrases:["Buon Natale! 🎄","Buone feste da Gattoku! 🎁"]},
     {name:"Pasqua",from:"2027-03-20",to:"2027-04-19",theme:"pasqua",frame:1,phrases:["Buona Pasqua! 🐣"]}
@@ -36,6 +36,6 @@ window.CONFIG={
   // ---- CREDITI E INFO (tasto ℹ️): sezioni con righe di testo; una riga può essere un link {t:"testo",url:"https://..."} ----
   credits:[
     {title:"Crediti",lines:["Gioco creato da: (Davide Franzella)","Musica: (titolo) di (autore)","Grafica: (Davide Franzella)"]},
-    {title:"Informazioni",lines:["Versione 1.1","Grazie per aver giocato! 🐱",   /*,{t:"☕ Dona qui",url:"https://example.com"}*/   "Nuovo aggiornamento, Versione 1.1 fix di bug e pattern ripetitivi + cassa evento con Frame buggato"]}
+    {title:"Informazioni",lines:["Versione 1.2","Grazie per aver giocato! 🐱",   /*,{t:"☕ Dona qui",url:"https://example.com"}*/ "Nuovo aggiornamento, Versione 1.2, miglioramento di alcuni sprite, altri sprite migliori è più realistici arriveranno molto preso, restate sintonizzati per i nuovi sprite 3D e altri miglioramenti per rendere l'esperienza migliore possibile.      ",  " ------ " , "Nuovo aggiornamento, Versione 1.1 fix di bug e pattern ripetitivi + cassa evento con Frame buggato"]}
   ]
 };
